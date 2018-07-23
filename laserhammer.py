@@ -9,7 +9,7 @@ def unnewline(s):
         return ''
 
     # Strip newlines.
-    s = s.strip().replace('\r', '').replace('\n', ' ')
+    s = s.replace('\r', '').replace('\n', ' ')
 
     return s
 
@@ -24,11 +24,18 @@ def dump(t, off, no_para=False):
         return ''
     if tag == 'title':
         return '\n.Sh %s\n' % unnewline(t.text).upper()
+    if tag == 'citerefentry':
+        s = '\n.Xr %s %s\n' % (t[0].text, t[1].text)
+        return s
 
     if tag == 'quote':
         s = '\n.Do\n%s' % unnewline(t.text)
-    elif tag == 'trademark':
+    elif tag == 'trademark' or tag == 'acronym' or tag == 'command' or tag == 'filename':
         s = ' ' + unnewline(t.text)
+    elif tag == 'literallayout' or tag == 'programlisting' or tag == 'screen':
+        s = '\n.Bd -literal -offset indent\n'
+        if t.text:
+            s = s + t.text
     elif tag == 'listitem':
         s = '\n.It\n'
         no_para = True
@@ -44,14 +51,18 @@ def dump(t, off, no_para=False):
 
     for elt in t:
         s = s + dump(elt, off + 1, no_para)
+        if elt.tail:
+            s = s + unnewline(elt.tail)
 
     if tag == 'quote':
-        s = s + '\n.Dc\n'
+        s = s + '\n.Dc '
+    elif tag == 'literallayout' or tag == 'programlisting' or tag == 'screen':
+        s = s + '\n.Ed\n'
     elif tag == 'itemizedlist':
         s = s + '\n.El\n'
-
-    if t.tail:
-        s = s + unnewline(t.tail)
+    elif tag == 'userinput':
+        # We're not doing anything for the opening tag for this one.
+        s = s + '\n'
 
     return s
 
