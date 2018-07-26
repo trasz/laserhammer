@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 
+import datetime
 import re
 import sys
 import xml.etree.ElementTree
@@ -8,17 +9,52 @@ def unnewline(s):
     if not s:
         return ''
 
-    # Strip newlines.
-    s = s.replace('\r', '').replace('\n', ' ')
+    t = ''
+    tlen = 0
+    for word in s.split():
+        if tlen + len(word) >= 79 or (tlen > 0 and t[-1] in ['.', '!', '?']):
+            t = t + '\n'
+            tlen = 0
+#            if word[0] == '.':
+#                t = t + '\\&'
+#                print('t = "' + t + '"')
+        elif tlen > 0:
+            t = t + ' '
+            tlen = tlen + 1
 
-    # Normalize whitespace.
-    s = re.sub('[ \t]+', ' ', s)
+        t = t + word
+        tlen = tlen + len(word)
 
-    return s
+    return t
+
+# Can't use ElementTree's .find(), as it can't be told to ignore namespaces.
+def subfind(elt, name):
+    for child in elt:
+        tag = re.sub('\\{.*\\}', '', child.tag)
+        if tag == name:
+            return child
+
+    sys.exit('<%s> not found' % name)
+
+def get_title(elt):
+    info = subfind(elt, 'info')
+    title = subfind(info, 'title')
+    title = title.text.replace(' ', '-').upper().replace('FREEBSD-', '')
+
+    return title
+
+def get_date(elt):
+    info = subfind(elt, 'info')
+    pubdate = subfind(info, 'pubdate')
+    date = pubdate.text.split()
+    parsed_date = datetime.datetime.strptime(date[3], '%Y-%m-%d')
+    date = parsed_date.strftime('%b %d, %Y')
+
+    return date
 
 def lh(t, pp_allowed=True):
     literal = False
-    tag = re.sub('\{.*\}', '', t.tag)
+    tag = re.sub('\\{.*\\}', '', t.tag)
 
     if tag == 'info':
         return ''
@@ -79,12 +115,12 @@ if len(sys.argv) != 3:
     sys.exit('usage: %s input-file output-file' % sys.argv[0])
 
 t = xml.etree.ElementTree.parse(sys.argv[1]).getroot()
+title = get_title(t)
+date = get_date(t)
 s = lh(t)
-
 s = re.sub('\n+', '\n', s)
-
 outfile = open(sys.argv[2], "w")
-outfile.write('.Dd fake\n')
-outfile.write('.Dt fake\n')
+outfile.write('.Dd %s\n' % date)
+outfile.write('.Dt %s 7\n' % title)
 outfile.write('.Os\n')
 outfile.write(s)
