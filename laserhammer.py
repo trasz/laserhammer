@@ -11,9 +11,13 @@ def unnewline(s):
     # Strip newlines.
     s = s.replace('\r', '').replace('\n', ' ')
 
+    # Normalize whitespace.
+    s = re.sub('[ \t]+', ' ', s)
+
     return s
 
-def dump(t, off, no_para=False):
+def lh(t, pp_allowed=True):
+    literal = False
     tag = re.sub('\{.*\}', '', t.tag)
 
     if tag == 'info':
@@ -22,47 +26,52 @@ def dump(t, off, no_para=False):
         return ''
     if tag == 'indexterm':
         return ''
-    if tag == 'title':
-        return '\n.Sh %s\n' % unnewline(t.text).upper()
     if tag == 'citerefentry':
         s = '\n.Xr %s %s\n' % (t[0].text, t[1].text)
         return s
 
     if tag == 'quote':
-        s = '\n.Do\n%s' % unnewline(t.text)
+        s = '\n.Do\n'
     elif tag == 'trademark' or tag == 'acronym' or tag == 'command' or tag == 'filename':
-        s = ' ' + unnewline(t.text)
+        s = ' '
     elif tag == 'literallayout' or tag == 'programlisting' or tag == 'screen':
         s = '\n.Bd -literal -offset indent\n'
-        if t.text:
-            s = s + t.text
+        literal = True
     elif tag == 'listitem':
         s = '\n.It\n'
-        no_para = True
-    elif tag == 'itemizedlist':
+        pp_allowed = False
+    elif tag == 'itemizedlist' or tag == 'variablelist':
         s = '\n.Bl -bullet -offset -compact\n'
-    elif tag == 'para' and not no_para:
-        s = '\n.Pp\n%s' % unnewline(t.text)
+    elif tag == 'para' and pp_allowed:
+        s = '\n.Pp\n'
     else:
-        if t.text:
-            s = unnewline(t.text)
+        s = ''
+
+    if t.text:
+        if literal:
+            s = s + t.text
         else:
-            s = ''
+            s = s + unnewline(t.text)
 
     for elt in t:
-        s = s + dump(elt, off + 1, no_para)
+        s = s + lh(elt, pp_allowed)
         if elt.tail:
-            s = s + unnewline(elt.tail)
+            if literal:
+                s = s + elt.tail
+            else:
+                s = s + unnewline(elt.tail)
 
     if tag == 'quote':
         s = s + '\n.Dc '
     elif tag == 'literallayout' or tag == 'programlisting' or tag == 'screen':
         s = s + '\n.Ed\n'
-    elif tag == 'itemizedlist':
+    elif tag == 'itemizedlist' or tag == 'variablelist':
         s = s + '\n.El\n'
     elif tag == 'userinput':
         # We're not doing anything for the opening tag for this one.
         s = s + '\n'
+    elif tag == 'title':
+        s = '\n.Sh %s\n' % unnewline(s).upper()
 
     return s
 
@@ -70,10 +79,8 @@ if len(sys.argv) != 3:
     sys.exit('usage: %s input-file output-file' % sys.argv[0])
 
 t = xml.etree.ElementTree.parse(sys.argv[1]).getroot()
-s = dump(t, 0)
+s = lh(t)
 
-# Normalize whitespace.
-s = re.sub('[ \t]+', ' ', s)
 s = re.sub('\n+', '\n', s)
 
 outfile = open(sys.argv[2], "w")
