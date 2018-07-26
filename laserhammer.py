@@ -5,14 +5,15 @@ import re
 import sys
 import xml.etree.ElementTree
 
-def unnewline(s):
+def reflow(s):
     if not s:
         return ''
 
     t = ''
     tlen = 0
+
     for word in s.split():
-        if tlen + len(word) >= 79 or (tlen > 0 and t[-1] in ['.', '!', '?']):
+        if tlen + len(word) >= 79:
             t = t + '\n'
             tlen = 0
 #            if word[0] == '.':
@@ -24,6 +25,14 @@ def unnewline(s):
 
         t = t + word
         tlen = tlen + len(word)
+
+        if t[-1] in ['.', '!', '?']:
+            t = t + '\n'
+            tlen = 0
+
+    # Preserve leading whitespace, it's crucial for eg the text after acronyms.
+    if s[0] == ' ':
+        t = ' ' + t
 
     return t
 
@@ -39,9 +48,8 @@ def subfind(elt, name):
 def get_title(elt):
     info = subfind(elt, 'info')
     title = subfind(info, 'title')
-    title = title.text.replace(' ', '-').upper().replace('FREEBSD-', '')
 
-    return title
+    return title.text
 
 def get_date(elt):
     info = subfind(elt, 'info')
@@ -52,9 +60,9 @@ def get_date(elt):
 
     return date
 
-def lh(t, pp_allowed=True):
+def laserhammer(elt, pp_allowed=True, below_sect1=False):
     literal = False
-    tag = re.sub('\\{.*\\}', '', t.tag)
+    tag = re.sub('\\{.*\\}', '', elt.tag)
 
     if tag == 'info':
         return ''
@@ -63,64 +71,82 @@ def lh(t, pp_allowed=True):
     if tag == 'indexterm':
         return ''
     if tag == 'citerefentry':
-        s = '\n.Xr %s %s\n' % (t[0].text, t[1].text)
-        return s
+        mdoc = '\n.Xr %s %s\n' % (elt[0].text, elt[1].text)
+        return mdoc
+    if tag == 'envar':
+        mdoc = '\n.Ev %s\n' % elt.text
+        return mdoc
+    if tag == 'filename':
+        mdoc = '\n.Pa %s\n' % elt.text
+        return mdoc
+
+    if tag == 'sect1':
+        below_sect1 = True
 
     if tag == 'quote':
-        s = '\n.Do\n'
-    elif tag == 'trademark' or tag == 'acronym' or tag == 'command' or tag == 'filename':
-        s = ' '
+        mdoc = '\n.Do\n'
+    elif tag == 'acronym' or tag == 'application' or tag == 'command' or tag == 'link' or tag == 'trademark':
+        mdoc = ' '
     elif tag == 'literallayout' or tag == 'programlisting' or tag == 'screen':
-        s = '\n.Bd -literal -offset indent\n'
+        mdoc = '\n.Bd -literal -offset indent\n'
         literal = True
     elif tag == 'listitem':
-        s = '\n.It\n'
+        mdoc = '\n.It\n'
         pp_allowed = False
     elif tag == 'itemizedlist' or tag == 'variablelist':
-        s = '\n.Bl -bullet -offset -compact\n'
+        mdoc = '\n.Bl -bullet -offset -compact\n'
     elif tag == 'para' and pp_allowed:
-        s = '\n.Pp\n'
+        mdoc = '\n.Pp\n'
     else:
-        s = ''
+        mdoc = ''
 
-    if t.text:
+    if elt.text:
         if literal:
-            s = s + t.text
+            mdoc = mdoc + elt.text
         else:
-            s = s + unnewline(t.text)
+            #mdoc = mdoc + '{' + reflow(elt.text) + '}'
+            mdoc = mdoc + reflow(elt.text)
 
-    for elt in t:
-        s = s + lh(elt, pp_allowed)
-        if elt.tail:
+    for child in elt:
+        mdoc = mdoc + laserhammer(child, pp_allowed, below_sect1)
+        if child.tail:
             if literal:
-                s = s + elt.tail
+                mdoc = mdoc + child.tail
             else:
-                s = s + unnewline(elt.tail)
+                #mdoc = mdoc + '{' + reflow(child.tail) + '}'
+                mdoc = mdoc + reflow(child.tail)
 
     if tag == 'quote':
-        s = s + '\n.Dc '
+        mdoc = mdoc + '\n.Dc '
     elif tag == 'literallayout' or tag == 'programlisting' or tag == 'screen':
-        s = s + '\n.Ed\n'
+        mdoc = mdoc + '\n.Ed\n'
     elif tag == 'itemizedlist' or tag == 'variablelist':
-        s = s + '\n.El\n'
+        mdoc = mdoc + '\n.El\n'
     elif tag == 'userinput':
         # We're not doing anything for the opening tag for this one.
-        s = s + '\n'
+        mdoc = mdoc + '\n'
     elif tag == 'title':
-        s = '\n.Sh %s\n' % unnewline(s).upper()
+        if below_sect1:
+            mdoc = '\n.Ss %s\n' % reflow(mdoc).upper()
+        else:
+            mdoc = '\n.Sh %s\n' % reflow(mdoc).upper()
 
-    return s
+    return mdoc
 
 if len(sys.argv) != 3:
     sys.exit('usage: %s input-file output-file' % sys.argv[0])
 
-t = xml.etree.ElementTree.parse(sys.argv[1]).getroot()
-title = get_title(t)
-date = get_date(t)
-s = lh(t)
-s = re.sub('\n+', '\n', s)
+root = xml.etree.ElementTree.parse(sys.argv[1]).getroot()
+title = get_title(root)
+date = get_date(root)
+mdoc = laserhammer(root)
+mdoc = re.sub('\n+', '\n', mdoc)
+
 outfile = open(sys.argv[2], "w")
 outfile.write('.Dd %s\n' % date)
-outfile.write('.Dt %s 7\n' % title)
+outfile.write('.Dt %s 7\n' % title.replace(' ', '-').upper().replace('FREEBSD-', ''))
 outfile.write('.Os\n')
-outfile.write(s)
+outfile.write('.Sh NAME\n')
+outfile.write('.Nm %s\n' % title.replace(' ', '-').lower().replace('freebsd-', ''))
+outfile.write('.Nd %s' % title)
+outfile.write(mdoc)
