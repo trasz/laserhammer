@@ -63,11 +63,13 @@ def reflow(s):
 
     return t
 
+def unnamespace(tag):
+    return re.sub('\\{.*\\}', '', tag)
+
 # Can't use ElementTree's .find(), as it can't be told to ignore namespaces.
 def subfind(elt, name):
     for child in elt:
-        tag = re.sub('\\{.*\\}', '', child.tag)
-        if tag == name:
+        if unnamespace(child.tag) == name:
             return child
 
     sys.exit('<%s> not found' % name)
@@ -81,6 +83,8 @@ def get_title(elt):
 def get_date(elt):
     info = subfind(elt, 'info')
     pubdate = subfind(info, 'pubdate')
+    if not pubdate.text:
+        return ''
     date = pubdate.text.split()
     parsed_date = datetime.datetime.strptime(date[3], '%Y-%m-%d')
     date = parsed_date.strftime('%b %d, %Y')
@@ -88,46 +92,41 @@ def get_date(elt):
     return date
 
 def concat(first, second):
-    if not first:
-        return second
-    if not second:
-        return first
-
-    if first[-1] == '\n':
-        if second[0] == '\n' or second[0] == ' ':
+    if first and first[-1] == '\n':
+        if second and second[0] in ('\n', ' '):
             second = second[1:]
-    if first[-1] == ' ':
-        if second[0] == ' ':
+    if first and first[-1] == ' ':
+        if second and second[0] == ' ':
             second = second[1:]
+    if second and second[0] == '\n':
+        if first and first[-1] == ' ':
+            first = first[:-1]
 
     return first + second
 
-def laserhammer(elt, pp_allowed=True, below_sect1=False, below_varlistentry=False):
+def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, below_varlistentry=False):
     literal = False
     grab_text = False
-    tag = re.sub('\\{.*\\}', '', elt.tag)
+    tag = unnamespace(elt.tag)
 
-    if tag == 'glossary':
-        return ''
-    if tag == 'info':
-        return ''
-    if tag == 'preface':
-        return ''
-    if tag == 'indexterm':
+    if tag in ('figure', 'glossary', 'indexterm', 'info', 'preface'):
         return ''
     if tag == 'citerefentry':
         return '\n.Xr %s %s ' % (subfind(elt, 'refentrytitle').text, subfind(elt, 'manvolnum').text)
-#    if tag == 'email':
-#        return '\n.Mt %s\n' % elt.text
-    if tag == 'envar' or tag == 'varname':
+    if tag in ('envar', 'varname'):
         return '\n.Ev %s\n' % elt.text
     if tag == 'errorname':
         return '\n.Er %s\n' % elt.text
     if tag == 'filename':
-        return '\n.Pa %s' % elt.text
-    if tag == 'option':
+        return '\n.Pa %s\n' % elt.text
+    if tag == 'function':
+        return '\n.Fn %s\n' % elt.text.split('(')[0]
+    if tag in ('arg', 'option', 'optional', 'parameter'):
         return '\n.Ar %s' % elt.text
-    if tag == 'computeroutput' or tag == 'guimenuitem' or tag == 'literal' or tag == 'package' or tag == 'systemitem' or tag == 'guibutton' or tag == 'firstterm':
+    if tag in ('buildtarget', 'computeroutput', 'constant',
+               'errortype', 'firstterm',
+               'guibutton', 'guimenu', 'guimenuitem',
+               'literal', 'package', 'revnumber', 'systemitem'):
         return '\n.Ql %s\n' % reflow(elt.text)
     if tag == 'uri':
         return '\n.Lk %s\n' % elt.text
@@ -135,12 +134,26 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_varlistentry=Fals
     mdoc = ''
     if tag == 'sect1':
         below_sect1 = True
+    elif tag == 'example':
+        # Ignore <title> tags inside <example>.
+        below_table = True
     elif tag == 'quote':
         mdoc = '\n.Do\n'
         grab_text = True
-    elif tag == 'acronym' or tag == 'application' or tag == 'command' or tag == 'emphasis' or tag == 'keycap' or tag == 'link' or tag == 'prompt' or tag == 'replaceable' or tag == 'trademark' or tag == 'userinput':
+    elif tag in ('acronym', 'address', 'application',
+                 'citetitle', 'city', 'command', 'country',
+                 'emphasis', 'fax', 'keycap', 'link', 'otheraddr',
+                 'phone', 'phrase', 'postcode', 'prompt',
+                 'replaceable', 'state', 'street', 'trademark',
+                 'userinput'):
         grab_text = True
-    elif tag == 'literallayout' or tag == 'programlisting' or tag == 'screen':
+    elif tag == 'entry' and below_table:
+        mdoc = '\n.Ta\n'
+        grab_text = True
+    elif tag == 'email':
+        mdoc = '\n.Mt '
+        grab_text = True
+    elif tag in ('literallayout', 'programlisting', 'screen'):
         mdoc = '\n.Bd -literal -offset indent\n'
         literal = True
         grab_text = True
@@ -153,12 +166,21 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_varlistentry=Fals
         pp_allowed = False
     elif tag == 'itemizedlist':
         mdoc = '\n.Bl -bullet -offset -compact\n'
+    elif tag == 'orderedlist':
+        mdoc = '\n.Bl -enum -offset -compact\n'
+        # Ignore <title> tags inside <orderedlist>.
+        below_table = True
     elif tag == 'variablelist':
         mdoc = '\n.Bl -tag -offset -compact\n'
     elif tag == 'para':
         if pp_allowed:
             mdoc = '\n.Pp\n'
         grab_text = True
+    elif tag == 'row' and below_table:
+        mdoc = '\n.It '
+    elif tag in ('table', 'informaltable'):
+        mdoc = '\n.Bl -column -offset -compact\n'
+        below_table = True
     elif tag == 'term' and below_varlistentry:
         mdoc = '\n.It '
         grab_text = True
@@ -171,25 +193,27 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_varlistentry=Fals
         else:
             mdoc = concat(mdoc, reflow(elt.text))
 
-#    if elt.text and len(elt.text.strip()) > 0 and not grab_text:
-#        print('ignoring text "%s", tag <%s>' % (elt.text, tag))
+    if elt.text and elt.text.strip() and not grab_text:
+        print('%s: ignoring text "%s", tag <%s>' % (sys.argv[0], elt.text, tag))
 
     for child in elt:
-        mdoc = concat(mdoc, laserhammer(child, pp_allowed, below_sect1, below_varlistentry))
+        mdoc = concat(mdoc, laserhammer(child, pp_allowed, below_sect1, below_table, below_varlistentry))
         if child.tail and grab_text:
             if literal:
                 mdoc = mdoc + child.tail
             else:
                 mdoc = concat(mdoc, reflow(child.tail))
 
-#        if child.tail and len(child.tail.strip()) > 0 and not grab_text:
-#            print('ignoring tail "%s", tag <%s>' % (elt.text, tag))
+        if child.tail and child.tail.strip() and not grab_text:
+            print('%s: ignoring tail "%s", tag <%s>' % (sys.argv[0], child.tail, tag))
 
-    if tag == 'quote':
+    if tag == 'email':
+        mdoc = concat(mdoc, '\n')
+    elif tag == 'quote':
         mdoc = concat(mdoc, '\n.Dc ')
-    elif tag == 'literallayout' or tag == 'programlisting' or tag == 'screen':
+    elif tag in ('literallayout', 'programlisting', 'screen'):
         mdoc = concat(mdoc, '\n.Ed\n')
-    elif tag == 'itemizedlist' or tag == 'variablelist':
+    elif tag in ('itemizedlist', 'orderedlist', 'table', 'variablelist'):
         mdoc = concat(mdoc, '\n.El\n')
     elif tag == 'userinput':
         # We're not doing anything for the opening tag for this one.
@@ -197,7 +221,9 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_varlistentry=Fals
     elif tag == 'term' and below_varlistentry:
         mdoc = concat(mdoc, '\n')
     elif tag == 'title':
-        if below_sect1:
+        if below_table:
+            mdoc = ''
+        elif below_sect1:
             mdoc = '\n.Ss %s\n' % reflow(mdoc).upper()
         else:
             mdoc = '\n.Sh %s\n' % reflow(mdoc).upper()
@@ -224,7 +250,6 @@ def main():
     title = get_title(root)
     date = get_date(root)
     mdoc = laserhammer(root)
-    mdoc = re.sub('\n+', '\n', mdoc)
 
     outfile.write('.Dd %s\n' % date)
     outfile.write('.Dt %s 7\n' % title.replace(' ', '-').upper().replace('FREEBSD-', ''))
