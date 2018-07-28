@@ -30,9 +30,13 @@ def reflow(s):
             t = t + '\n'
             tlen = 0
 
-    # Preserve leading whitespace, it's crucial for eg the text after acronyms.
+    # Preserve leading and trailing whitespace, it's crucial
+    # for eg the text after acronyms.
     if s[0] == ' ':
         t = ' ' + t
+
+    if s[-1] == ' ':
+        t = t + ' '
 
     return t
 
@@ -60,8 +64,9 @@ def get_date(elt):
 
     return date
 
-def laserhammer(elt, pp_allowed=True, below_sect1=False):
+def laserhammer(elt, pp_allowed=True, below_sect1=False, below_varlistentry=False):
     literal = False
+    ignore_text = False
     tag = re.sub('\\{.*\\}', '', elt.tag)
 
     if tag == 'info':
@@ -71,36 +76,42 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False):
     if tag == 'indexterm':
         return ''
     if tag == 'citerefentry':
-        mdoc = '\n.Xr %s %s\n' % (elt[0].text, elt[1].text)
-        return mdoc
+        return '\n.Xr %s %s' % (elt[0].text, elt[1].text)
     if tag == 'envar':
-        mdoc = '\n.Ev %s\n' % elt.text
-        return mdoc
+        return '\n.Ev %s\n' % elt.text
     if tag == 'filename':
-        mdoc = '\n.Pa %s\n' % elt.text
-        return mdoc
+        return '\n.Pa %s' % elt.text
+    if tag == 'option':
+        return '\n.Ar %s' % elt.text
 
+    mdoc = ''
     if tag == 'sect1':
         below_sect1 = True
-
-    if tag == 'quote':
+    elif tag == 'quote':
         mdoc = '\n.Do\n'
     elif tag == 'acronym' or tag == 'application' or tag == 'command' or tag == 'link' or tag == 'trademark':
-        mdoc = ' '
+        mdoc = ''
     elif tag == 'literallayout' or tag == 'programlisting' or tag == 'screen':
         mdoc = '\n.Bd -literal -offset indent\n'
         literal = True
+    elif tag == 'varlistentry':
+        mdoc = ''
+        below_varlistentry = True
     elif tag == 'listitem':
-        mdoc = '\n.It\n'
+        if not below_varlistentry:
+            mdoc = '\n.It\n'
         pp_allowed = False
-    elif tag == 'itemizedlist' or tag == 'variablelist':
+        ignore_text = True
+    elif tag == 'itemizedlist':
         mdoc = '\n.Bl -bullet -offset -compact\n'
+    elif tag == 'variablelist':
+        mdoc = '\n.Bl -hang -offset -compact\n'
     elif tag == 'para' and pp_allowed:
         mdoc = '\n.Pp\n'
-    else:
-        mdoc = ''
+    elif tag == 'term' and below_varlistentry:
+        mdoc = '\n.It '
 
-    if elt.text:
+    if elt.text and not ignore_text:
         if literal:
             mdoc = mdoc + elt.text
         else:
@@ -108,7 +119,7 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False):
             mdoc = mdoc + reflow(elt.text)
 
     for child in elt:
-        mdoc = mdoc + laserhammer(child, pp_allowed, below_sect1)
+        mdoc = mdoc + laserhammer(child, pp_allowed, below_sect1, below_varlistentry)
         if child.tail:
             if literal:
                 mdoc = mdoc + child.tail
@@ -124,6 +135,8 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False):
         mdoc = mdoc + '\n.El\n'
     elif tag == 'userinput':
         # We're not doing anything for the opening tag for this one.
+        mdoc = mdoc + '\n'
+    elif tag == 'term' and below_varlistentry:
         mdoc = mdoc + '\n'
     elif tag == 'title':
         if below_sect1:
