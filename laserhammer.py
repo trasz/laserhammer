@@ -1,6 +1,30 @@
 #!/usr/bin/env python3
+#
+# Copyright (c) 2018 Edward Tomasz Napierala <trasz@FreeBSD.org>
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions
+# are met:
+# 1. Redistributions of source code must retain the above copyright
+#    notice, this list of conditions and the following disclaimer.
+# 2. Redistributions in binary form must reproduce the above copyright
+#    notice, this list of conditions and the following disclaimer in the
+#    documentation and/or other materials provided with the distribution.
+#
+# THIS SOFTWARE IS PROVIDED BY THE AUTHOR AND CONTRIBUTORS ``AS IS'' AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+# IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
+# ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHOR OR CONTRIBUTORS BE LIABLE
+# FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+# DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
+# OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
+# HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
+# LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
+# OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
+# SUCH DAMAGE.
 
 import datetime
+import getopt
 import re
 import sys
 import xml.etree.ElementTree
@@ -146,20 +170,35 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_varlistentry=Fals
 
     return mdoc
 
-if len(sys.argv) != 3:
-    sys.exit('usage: %s input-file output-file' % sys.argv[0])
+def main():
+    if len(sys.argv) > 3:
+        sys.exit('usage: %s [input-file [output-file]]' % sys.argv[0])
 
-root = xml.etree.ElementTree.parse(sys.argv[1]).getroot()
-title = get_title(root)
-date = get_date(root)
-mdoc = laserhammer(root)
-mdoc = re.sub('\n+', '\n', mdoc)
+    if len(sys.argv) > 2:
+        outfile = open(sys.argv[2], "w")
+    else:
+        outfile = sys.stdout
 
-outfile = open(sys.argv[2], "w")
-outfile.write('.Dd %s\n' % date)
-outfile.write('.Dt %s 7\n' % title.replace(' ', '-').upper().replace('FREEBSD-', ''))
-outfile.write('.Os\n')
-outfile.write('.Sh NAME\n')
-outfile.write('.Nm %s\n' % title.replace(' ', '-').lower().replace('freebsd-', ''))
-outfile.write('.Nd %s' % title)
-outfile.write(mdoc)
+    if len(sys.argv) > 1:
+        infile = sys.argv[1]
+    else:
+        # This '.buffer' thing is a workaround for an encoding problem;
+        # see https://github.com/lincolnloop/python-qrcode/issues/67.
+        infile = sys.stdin.buffer
+
+    root = xml.etree.ElementTree.parse(infile).getroot()
+    title = get_title(root)
+    date = get_date(root)
+    mdoc = laserhammer(root)
+    mdoc = re.sub('\n+', '\n', mdoc)
+
+    outfile.write('.Dd %s\n' % date)
+    outfile.write('.Dt %s 7\n' % title.replace(' ', '-').upper().replace('FREEBSD-', ''))
+    outfile.write('.Os\n')
+    outfile.write('.Sh NAME\n')
+    outfile.write('.Nm %s\n' % title.replace(' ', '-').lower().replace('freebsd-', ''))
+    outfile.write('.Nd %s' % title)
+    outfile.write(mdoc)
+
+if __name__ == '__main__':
+    main()
