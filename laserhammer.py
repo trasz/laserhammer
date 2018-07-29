@@ -24,7 +24,6 @@
 # SUCH DAMAGE.
 
 import datetime
-import getopt
 import re
 import sys
 import xml.etree.ElementTree
@@ -50,7 +49,7 @@ def reflow(s):
         t = t + word
         tlen = tlen + len(word)
 
-        if t[-1] in ['.', '!', '?']:
+        if t[-1] in ('.', '!', '?'):
             t = t + '\n'
             tlen = 0
 
@@ -88,6 +87,21 @@ def get_date(elt):
 
     return date
 
+def concat(first, second):
+    if not first:
+        return second
+    if not second:
+        return first
+
+    if first[-1] == '\n':
+        if second[0] == '\n' or second[0] == ' ':
+            second = second[1:]
+    if first[-1] == ' ':
+        if second[0] == ' ':
+            second = second[1:]
+
+    return first + second
+
 def laserhammer(elt, pp_allowed=True, below_sect1=False, below_varlistentry=False):
     literal = False
     ignore_text = False
@@ -100,7 +114,7 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_varlistentry=Fals
     if tag == 'indexterm':
         return ''
     if tag == 'citerefentry':
-        return '\n.Xr %s %s' % (elt[0].text, elt[1].text)
+        return '\n.Xr %s %s ' % (subfind(elt, 'refentrytitle').text, subfind(elt, 'manvolnum').text)
     if tag == 'envar':
         return '\n.Ev %s\n' % elt.text
     if tag == 'filename':
@@ -119,7 +133,6 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_varlistentry=Fals
         mdoc = '\n.Bd -literal -offset indent\n'
         literal = True
     elif tag == 'varlistentry':
-        mdoc = ''
         below_varlistentry = True
     elif tag == 'listitem':
         if not below_varlistentry:
@@ -129,7 +142,7 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_varlistentry=Fals
     elif tag == 'itemizedlist':
         mdoc = '\n.Bl -bullet -offset -compact\n'
     elif tag == 'variablelist':
-        mdoc = '\n.Bl -hang -offset -compact\n'
+        mdoc = '\n.Bl -tag -offset -compact\n'
     elif tag == 'para' and pp_allowed:
         mdoc = '\n.Pp\n'
     elif tag == 'term' and below_varlistentry:
@@ -139,29 +152,27 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_varlistentry=Fals
         if literal:
             mdoc = mdoc + elt.text
         else:
-            #mdoc = mdoc + '{' + reflow(elt.text) + '}'
-            mdoc = mdoc + reflow(elt.text)
+            mdoc = concat(mdoc, reflow(elt.text))
 
     for child in elt:
-        mdoc = mdoc + laserhammer(child, pp_allowed, below_sect1, below_varlistentry)
+        mdoc = concat(mdoc, laserhammer(child, pp_allowed, below_sect1, below_varlistentry))
         if child.tail:
             if literal:
                 mdoc = mdoc + child.tail
             else:
-                #mdoc = mdoc + '{' + reflow(child.tail) + '}'
-                mdoc = mdoc + reflow(child.tail)
+                mdoc = concat(mdoc, reflow(child.tail))
 
     if tag == 'quote':
-        mdoc = mdoc + '\n.Dc '
+        mdoc = concat(mdoc, '\n.Dc ')
     elif tag == 'literallayout' or tag == 'programlisting' or tag == 'screen':
-        mdoc = mdoc + '\n.Ed\n'
+        mdoc = concat(mdoc, '\n.Ed\n')
     elif tag == 'itemizedlist' or tag == 'variablelist':
-        mdoc = mdoc + '\n.El\n'
+        mdoc = concat(mdoc, '\n.El\n')
     elif tag == 'userinput':
         # We're not doing anything for the opening tag for this one.
-        mdoc = mdoc + '\n'
+        mdoc = concat(mdoc, '\n')
     elif tag == 'term' and below_varlistentry:
-        mdoc = mdoc + '\n'
+        mdoc = concat(mdoc, '\n')
     elif tag == 'title':
         if below_sect1:
             mdoc = '\n.Ss %s\n' % reflow(mdoc).upper()
