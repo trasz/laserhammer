@@ -104,9 +104,11 @@ def concat(first, second):
 
 def laserhammer(elt, pp_allowed=True, below_sect1=False, below_varlistentry=False):
     literal = False
-    ignore_text = False
+    grab_text = False
     tag = re.sub('\\{.*\\}', '', elt.tag)
 
+    if tag == 'glossary':
+        return ''
     if tag == 'info':
         return ''
     if tag == 'preface':
@@ -115,52 +117,73 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_varlistentry=Fals
         return ''
     if tag == 'citerefentry':
         return '\n.Xr %s %s ' % (subfind(elt, 'refentrytitle').text, subfind(elt, 'manvolnum').text)
-    if tag == 'envar':
+#    if tag == 'email':
+#        return '\n.Mt %s\n' % elt.text
+    if tag == 'envar' or tag == 'varname':
         return '\n.Ev %s\n' % elt.text
+    if tag == 'errorname':
+        return '\n.Er %s\n' % elt.text
     if tag == 'filename':
         return '\n.Pa %s' % elt.text
     if tag == 'option':
         return '\n.Ar %s' % elt.text
+    if tag == 'computeroutput' or tag == 'guimenuitem' or tag == 'literal' or tag == 'package' or tag == 'systemitem' or tag == 'guibutton' or tag == 'firstterm':
+        return '\n.Ql %s\n' % reflow(elt.text)
+    if tag == 'uri':
+        return '\n.Lk %s\n' % elt.text
 
     mdoc = ''
     if tag == 'sect1':
         below_sect1 = True
     elif tag == 'quote':
         mdoc = '\n.Do\n'
-    elif tag == 'acronym' or tag == 'application' or tag == 'command' or tag == 'link' or tag == 'trademark':
-        mdoc = ''
+        grab_text = True
+    elif tag == 'acronym' or tag == 'application' or tag == 'command' or tag == 'emphasis' or tag == 'keycap' or tag == 'link' or tag == 'prompt' or tag == 'replaceable' or tag == 'trademark' or tag == 'userinput':
+        grab_text = True
     elif tag == 'literallayout' or tag == 'programlisting' or tag == 'screen':
         mdoc = '\n.Bd -literal -offset indent\n'
         literal = True
+        grab_text = True
     elif tag == 'varlistentry':
         below_varlistentry = True
+        grab_text = True
     elif tag == 'listitem':
         if not below_varlistentry:
             mdoc = '\n.It\n'
         pp_allowed = False
-        ignore_text = True
     elif tag == 'itemizedlist':
         mdoc = '\n.Bl -bullet -offset -compact\n'
     elif tag == 'variablelist':
         mdoc = '\n.Bl -tag -offset -compact\n'
-    elif tag == 'para' and pp_allowed:
-        mdoc = '\n.Pp\n'
+    elif tag == 'para':
+        if pp_allowed:
+            mdoc = '\n.Pp\n'
+        grab_text = True
     elif tag == 'term' and below_varlistentry:
         mdoc = '\n.It '
+        grab_text = True
+    elif tag == 'title':
+        grab_text = True
 
-    if elt.text and not ignore_text:
+    if elt.text and grab_text:
         if literal:
             mdoc = mdoc + elt.text
         else:
             mdoc = concat(mdoc, reflow(elt.text))
 
+#    if elt.text and len(elt.text.strip()) > 0 and not grab_text:
+#        print('ignoring text "%s", tag <%s>' % (elt.text, tag))
+
     for child in elt:
         mdoc = concat(mdoc, laserhammer(child, pp_allowed, below_sect1, below_varlistentry))
-        if child.tail:
+        if child.tail and grab_text:
             if literal:
                 mdoc = mdoc + child.tail
             else:
                 mdoc = concat(mdoc, reflow(child.tail))
+
+#        if child.tail and len(child.tail.strip()) > 0 and not grab_text:
+#            print('ignoring tail "%s", tag <%s>' % (elt.text, tag))
 
     if tag == 'quote':
         mdoc = concat(mdoc, '\n.Dc ')
