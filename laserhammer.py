@@ -104,10 +104,15 @@ def concat(first, second):
 
     return first + second
 
-def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, below_varlistentry=False):
+def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, below_varlistentry=False, below_title=False):
     literal = False
     grab_text = False
     tag = unnamespace(elt.tag)
+
+    if below_title:
+        if elt.text:
+            return elt.text
+        return ''
 
     if tag in ('figure', 'glossary', 'indexterm', 'info', 'preface'):
         return ''
@@ -186,6 +191,7 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
         grab_text = True
     elif tag == 'title':
         grab_text = True
+        below_title = True;
 
     if elt.text and grab_text:
         if literal:
@@ -197,7 +203,7 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
         print('%s: ignoring text "%s", tag <%s>' % (sys.argv[0], elt.text, tag))
 
     for child in elt:
-        mdoc = concat(mdoc, laserhammer(child, pp_allowed, below_sect1, below_table, below_varlistentry))
+        mdoc = concat(mdoc, laserhammer(child, pp_allowed, below_sect1, below_table, below_varlistentry, below_title))
         if child.tail and grab_text:
             if literal:
                 mdoc = mdoc + child.tail
