@@ -122,11 +122,6 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
         return '\n.Xr %s %s ' % (subfind(elt, 'refentrytitle').text, subfind(elt, 'manvolnum').text)
     if tag == 'function':
         return '\n.Fn %s\n' % elt.text.split('(')[0]
-    if tag in ('buildtarget', 'computeroutput', 'constant',
-               'errortype', 'firstterm',
-               'guibutton', 'guimenu', 'guimenuitem',
-               'literal', 'package', 'revnumber', 'systemitem'):
-        return '\n.Ql %s\n' % reflow(elt.text)
 
     mdoc = ''
     if tag == 'sect1':
@@ -146,6 +141,13 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
         grab_text = True
     elif tag in ('arg', 'option', 'optional', 'parameter'):
         mdoc = '\n.Ar '
+        grab_text = True
+        append_newline = True
+    elif tag in ('buildtarget', 'computeroutput', 'constant',
+               'errortype', 'firstterm',
+               'guibutton', 'guimenu', 'guimenuitem',
+               'literal', 'package', 'revnumber', 'systemitem'):
+        mdoc = '\n.Ql '
         grab_text = True
         append_newline = True
     elif tag == 'entry' and below_table:
@@ -236,9 +238,6 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
         mdoc = concat(mdoc, '\n.Ed\n')
     elif tag in ('itemizedlist', 'orderedlist', 'table', 'variablelist'):
         mdoc = concat(mdoc, '\n.El\n')
-    elif tag == 'userinput':
-        # We're not doing anything for the opening tag for this one.
-        mdoc = concat(mdoc, '\n')
     elif tag == 'title':
         if below_table:
             mdoc = ''
