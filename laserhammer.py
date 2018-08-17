@@ -110,18 +110,18 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
     append_newline = False
     tag = unnamespace(elt.tag)
 
+    if tag in ('figure', 'glossary', 'indexterm', 'info', 'preface'):
+        return ''
+    if tag == 'citerefentry':
+        if below_title:
+            return '%s' % (subfind(elt, 'refentrytitle').text)
+        return '\n.Xr %s %s ' % (subfind(elt, 'refentrytitle').text, subfind(elt, 'manvolnum').text)
+
     # Do not insert any markup in what's supposed to be the title.
     if below_title:
         if elt.text:
             return elt.text
         return ''
-
-    if tag in ('figure', 'glossary', 'indexterm', 'info', 'preface'):
-        return ''
-    if tag == 'citerefentry':
-        return '\n.Xr %s %s ' % (subfind(elt, 'refentrytitle').text, subfind(elt, 'manvolnum').text)
-    if tag == 'function':
-        return '\n.Fn %s\n' % elt.text.split('(')[0]
 
     mdoc = ''
     if tag == 'sect1':
@@ -134,7 +134,7 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
         grab_text = True
     elif tag in ('acronym', 'address', 'application',
                  'citetitle', 'city', 'command', 'country',
-                 'emphasis', 'fax', 'keycap', 'link', 'otheraddr',
+                 'emphasis', 'fax', 'function', 'keycap', 'link', 'otheraddr',
                  'phone', 'phrase', 'postcode', 'prompt',
                  'replaceable', 'state', 'street', 'trademark',
                  'userinput'):
@@ -144,9 +144,9 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
         grab_text = True
         append_newline = True
     elif tag in ('buildtarget', 'computeroutput', 'constant',
-               'errortype', 'firstterm',
-               'guibutton', 'guimenu', 'guimenuitem',
-               'literal', 'package', 'revnumber', 'systemitem'):
+                 'errortype', 'firstterm',
+                 'guibutton', 'guimenu', 'guimenuitem',
+                 'literal', 'package', 'revnumber', 'systemitem'):
         mdoc = '\n.Ql '
         grab_text = True
         append_newline = True
@@ -166,7 +166,7 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
         grab_text = True
         append_newline = True
     elif tag == 'filename':
-        mdoc ='\n.Pa '
+        mdoc = '\n.Pa '
         grab_text = True
         append_newline = True
     elif tag in ('literallayout', 'programlisting', 'screen'):
@@ -203,7 +203,7 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
         append_newline = True
     elif tag == 'title':
         grab_text = True
-        below_title = True;
+        below_title = True
     elif tag == 'uri':
         mdoc = '\n.Lk '
         grab_text = True
@@ -232,7 +232,9 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
     if append_newline:
         mdoc = concat(mdoc, '\n')
 
-    if tag == 'quote':
+    if tag == 'function':
+        mdoc = '\n.Fn %s\n' % mdoc.split('(')[0]
+    elif tag == 'quote':
         mdoc = concat(mdoc, '\n.Dc ')
     elif tag in ('literallayout', 'programlisting', 'screen'):
         mdoc = concat(mdoc, '\n.Ed\n')
