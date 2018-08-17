@@ -107,8 +107,10 @@ def concat(first, second):
 def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, below_varlistentry=False, below_title=False):
     literal = False
     grab_text = False
+    append_newline = False
     tag = unnamespace(elt.tag)
 
+    # Do not insert any markup in what's supposed to be the title.
     if below_title:
         if elt.text:
             return elt.text
@@ -118,23 +120,13 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
         return ''
     if tag == 'citerefentry':
         return '\n.Xr %s %s ' % (subfind(elt, 'refentrytitle').text, subfind(elt, 'manvolnum').text)
-    if tag in ('envar', 'varname'):
-        return '\n.Ev %s\n' % elt.text
-    if tag == 'errorname':
-        return '\n.Er %s\n' % elt.text
-    if tag == 'filename':
-        return '\n.Pa %s\n' % elt.text
     if tag == 'function':
         return '\n.Fn %s\n' % elt.text.split('(')[0]
-    if tag in ('arg', 'option', 'optional', 'parameter'):
-        return '\n.Ar %s' % elt.text
     if tag in ('buildtarget', 'computeroutput', 'constant',
                'errortype', 'firstterm',
                'guibutton', 'guimenu', 'guimenuitem',
                'literal', 'package', 'revnumber', 'systemitem'):
         return '\n.Ql %s\n' % reflow(elt.text)
-    if tag == 'uri':
-        return '\n.Lk %s\n' % elt.text
 
     mdoc = ''
     if tag == 'sect1':
@@ -152,12 +144,29 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
                  'replaceable', 'state', 'street', 'trademark',
                  'userinput'):
         grab_text = True
+    elif tag in ('arg', 'option', 'optional', 'parameter'):
+        mdoc = '\n.Ar '
+        grab_text = True
+        append_newline = True
     elif tag == 'entry' and below_table:
         mdoc = '\n.Ta\n'
         grab_text = True
     elif tag == 'email':
         mdoc = '\n.Mt '
         grab_text = True
+        append_newline = True
+    elif tag in ('envar', 'varname'):
+        mdoc = '\n.Ev '
+        grab_text = True
+        append_newline = True
+    elif tag == 'errorname':
+        mdoc = '\n.Er '
+        grab_text = True
+        append_newline = True
+    elif tag == 'filename':
+        mdoc ='\n.Pa '
+        grab_text = True
+        append_newline = True
     elif tag in ('literallayout', 'programlisting', 'screen'):
         mdoc = '\n.Bd -literal -offset indent\n'
         literal = True
@@ -189,9 +198,14 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
     elif tag == 'term' and below_varlistentry:
         mdoc = '\n.It '
         grab_text = True
+        append_newline = True
     elif tag == 'title':
         grab_text = True
         below_title = True;
+    elif tag == 'uri':
+        mdoc = '\n.Lk '
+        grab_text = True
+        append_newline = True
 
     if elt.text and grab_text:
         if literal:
@@ -213,9 +227,10 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
         if child.tail and child.tail.strip() and not grab_text:
             print('%s: ignoring tail "%s", tag <%s>' % (sys.argv[0], child.tail, tag))
 
-    if tag == 'email':
+    if append_newline:
         mdoc = concat(mdoc, '\n')
-    elif tag == 'quote':
+
+    if tag == 'quote':
         mdoc = concat(mdoc, '\n.Dc ')
     elif tag in ('literallayout', 'programlisting', 'screen'):
         mdoc = concat(mdoc, '\n.Ed\n')
@@ -223,8 +238,6 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
         mdoc = concat(mdoc, '\n.El\n')
     elif tag == 'userinput':
         # We're not doing anything for the opening tag for this one.
-        mdoc = concat(mdoc, '\n')
-    elif tag == 'term' and below_varlistentry:
         mdoc = concat(mdoc, '\n')
     elif tag == 'title':
         if below_table:
