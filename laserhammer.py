@@ -242,7 +242,7 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
         mdoc = concat(mdoc, '\n.Dc\n')
     elif tag in ('literallayout', 'programlisting', 'screen'):
         mdoc = concat(mdoc, '\n.Ed\n')
-    elif tag in ('itemizedlist', 'orderedlist', 'table', 'variablelist'):
+    elif tag in ('itemizedlist', 'orderedlist', 'informaltable', 'table', 'variablelist'):
         mdoc = concat(mdoc, '\n.El\n')
     elif tag == 'link' and not mdoc and '{http://www.w3.org/1999/xlink}href' in elt.attrib:
         # If there's no link description, try inserting the URL instead.

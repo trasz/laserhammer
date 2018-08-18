@@ -1602,6 +1602,7 @@ accept the default (remainder of the disk)
 .Pa /usr
 .Ta
 .Ql exusrfs
+.El
 .Pp
 After the custom partitions have been created, select
 .Ql [ Finish ]
@@ -3289,6 +3290,7 @@ Sticky bit
 s
 .Ta
 Set UID or GID
+.El
 .Pp
 These values are used with
 .Xr chmod 1 , but with letters instead of numbers.
@@ -3774,6 +3776,7 @@ is a memory-based file system.
 .Pa /var/yp/
 .Ta
 NIS maps.
+.El
 .Ss DISK ORGANIZATION
 .Pp
 The smallest unit of organization that FreeBSD uses to find files is the
@@ -4094,6 +4097,7 @@ used to have a special meaning associated with it, although that is now gone
 and
 .Ql d
 may work as any normal partition.
+.El
 .Pp
 Disks in FreeBSD are divided into slices, referred to in Windows as partitions, which are numbered from 1 to 4.
 These are then divided into partitions, which contain file systems, and are
@@ -4261,6 +4265,7 @@ The fifth partition (
 ) on the second SCSI disk (
 .Ql da1
 ).
+.El
 .Pp
 This diagram shows FreeBSD's view of the firstSATA disk attached to the system.
 Assume that the disk is 250 GB in size, and contains an 80 GB slice and a 170
@@ -8684,6 +8689,7 @@ medium
 heavy
 .Ta
 Requires Gtk+
+.El
 .Ss FIREFOX
 .Pp
 Firefox is an open source browser that features a standards-compliant HTML display
@@ -8920,6 +8926,7 @@ somewhat heavy
 huge
 .Ta
 Gtk+, or KDE/ GNOME, or JDK
+.El
 .Ss CALLIGRA
 .Pp
 The KDE desktop environment includes an office suite which can be installed
@@ -9137,6 +9144,7 @@ light
 heavy
 .Ta
 KDE
+.El
 .Ss XPDF
 .Pp
 For users that prefer a small FreeBSD PDF viewer,Xpdf provides a light-weight and efficient viewer which requires few resources.
@@ -9269,6 +9277,7 @@ light
 heavy
 .Ta
 KDE
+.El
 .Ss GNUCASH
 .Pp
 GnuCash is part of theGNOME effort to provide user-friendly, yet powerful, applications to end-users.
@@ -11543,6 +11552,7 @@ Serial
 These values are for a typical serial printer connected to a motherboard serial
 port.
 The baud rate is 9600, and no parity is used.
+.El
 .Pp
 Suppress the printing of a header page at the start of a print job.
 .Pp
@@ -14146,6 +14156,7 @@ May contain per-application subdirectories.
 Automatically generated system-specific database files, such as the package
 database and the
 .Xr locate 1 database.
+.El
 .Ss HOSTNAMES
 .Ss /ETC/RESOLV.CONF
 .Pp
@@ -14173,6 +14184,7 @@ This is normally determined by the domain of the local hostname.
 .Ql domain
 .Ta
 The local domain name.
+.El
 .Pp
 A typical
 .Pa /etc/resolv.conf
@@ -30331,6 +30343,7 @@ The path or file was modified.
 R
 .Ta
 The path or file was renamed.
+.El
 .Pp
 Comparing the output with the table, it becomes clear that
 .Pa passwd
@@ -32142,6 +32155,7 @@ If missing devices can be reconnected, the pool will return to a Online state.
 If there is insufficient redundancy to compensate for the number of failed
 disks, then the contents of the pool are lost and must be restored from
 backups.
+.El
 .Ss SYNOPSIS
 .Pp
 File systems are an integral part of any operating system.
@@ -38259,6 +38273,7 @@ internal console
 , keyboard absent
 .Ta
 serial console
+.El
 .Pp
 After the message, there will be a small pause before the boot blocks continue
 loading the boot loader and before any further messages are printed to the
@@ -41156,6 +41171,7 @@ Both TCP IPv4 and IPv6
 udp46
 .Ta
 Both UDP IPv4 and IPv6
+.El
 .It
 {wait|nowait}[/max-child[/max-connections-per-ip-per-minute[/max-child-per-ip]]]
 In this field,
@@ -41368,6 +41384,7 @@ The NFS mount daemon which carries out requests received fromnfsd.
 rpcbind
 .Ta
 This daemon allows NFSclients to discover which port theNFS server is using.
+.El
 .Pp
 Running
 .Xr nfsiod 8 on the client can improve performance, but is not required.
@@ -41919,6 +41936,7 @@ Client machine
 .Ql 10.0.0.[6-17]
 .Ta
 Other client machines
+.El
 .Pp
 If this is the first time an NISscheme is being developed, it should be thoroughly planned ahead of time.
 Regardless of network size, several decisions need to be made as part of the
@@ -46640,6 +46658,7 @@ The internal IP address of the LAN client.
 publicIP
 .Ta
 The external IP address corresponding to the LANclient.
+.El
 .Pp
 In the example, this argument would read:
 .Bd -literal -offset indent
@@ -52759,6 +52778,7 @@ Where to send test messages instead of to one of the actual lists
 freebsd-women
 .Ta
 FreeBSD advocacy for women
+.El
 .Pp
 Technical lists: The following lists are for technical discussion.
 Read the charter for each list carefully before joining or sending mail to one
@@ -53213,6 +53233,7 @@ XFCE for FreeBSD — porting and maintaining
 freebsd-zope
 .Ta
 Zope for FreeBSD — porting and maintaining
+.El
 .Pp
 Limited lists: The following lists are for more specialized (and demanding) audiences and are
 probably not of interest to the general public.
@@ -53245,6 +53266,7 @@ FreeBSD Work-In-Progress Status
 freebsd-wireless
 .Ta
 Discussions of 802.11 stack, tools, device driver development
+.El
 .Pp
 Digest lists: All of the above lists are available in a digest format.
 Once subscribed to a list, the digest options can be changed in the account
@@ -53472,6 +53494,7 @@ svn-src-vendor
 .Pa /usr/src
 .Ta
 All changes to the vendor work area of the src Subversion repository
+.El
 .Ss HOW TO SUBSCRIBE
 .Pp
 To subscribe to a list, click the list name athttp://lists.FreeBSD.org/mailman/listinfo.
