@@ -239,7 +239,7 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
     if tag == 'function':
         mdoc = '\n.Fn %s\n' % mdoc.split('(')[0]
     elif tag == 'quote':
-        mdoc = concat(mdoc, '\n.Dc ')
+        mdoc = concat(mdoc, '\n.Dc\n')
     elif tag in ('literallayout', 'programlisting', 'screen'):
         mdoc = concat(mdoc, '\n.Ed\n')
     elif tag in ('itemizedlist', 'orderedlist', 'table', 'variablelist'):
