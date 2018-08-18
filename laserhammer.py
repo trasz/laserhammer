@@ -199,7 +199,14 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
     elif tag == 'row' and below_table:
         mdoc = '\n.It '
     elif tag in ('table', 'informaltable'):
-        mdoc = '\n.Bl -column -offset -compact\n'
+        # XXX: We're doing three ugly hacks here: we don't know how wide
+        #      the columns should be, so let's assume 14.  We don't know
+        #      the number of columns either, so let's assume 5.  Plus one
+        #      "hidden" column, because we suck at .Ta placement.
+        mdoc = '\n.Bl -column -offset -compact ""'
+        for i in range(5):
+            mdoc = mdoc + ' "' + ' ' * 14 + '"'
+        mdoc = mdoc + '\n'
         below_table = True
     elif tag == 'term' and below_varlistentry:
         mdoc = '\n.It '
