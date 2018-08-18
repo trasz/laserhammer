@@ -55,10 +55,10 @@ def reflow(s):
 
     # Preserve leading and trailing whitespace, it's crucial
     # for eg the text after acronyms.
-    if s[0] == ' ':
+    if s[0] in ('\n', '\t', ' '):
         t = ' ' + t
 
-    if s[-1] == ' ':
+    if s[-1] in ('\n', '\t', ' '):
         t = t + ' '
 
     return t
