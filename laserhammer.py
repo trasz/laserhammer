@@ -93,14 +93,11 @@ def get_date(elt):
 
 def concat(first, second):
     if first and first[-1] == '\n':
-        if second and second[0] in ('\n', ' '):
-            second = second[1:]
-    if first and first[-1] == ' ':
-        if second and second[0] == ' ':
-            second = second[1:]
+        second = second.lstrip()
     if second and second[0] == '\n':
-        if first and first[-1] == ' ':
-            first = first[:-1]
+        first = first.rstrip()
+    if first and first[-1] in ('\t', ' '):
+        second = second.lstrip()
 
     return first + second
 

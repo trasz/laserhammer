@@ -204,7 +204,6 @@ Please see for more information about obtaining FreeBSD.
 FreeBSD has been known for its web serving capabilities - sites that run on
 FreeBSD includeHacker News,Netcraft,NetEase,Netflix,Sina,Sony Japan,Rambler,Yahoo!
 , andYandex.
-
 .Pp
 FreeBSD's advanced features, proven security, predictable release cycle, and
 permissive license have led to its use as a platform for building many
@@ -1276,7 +1275,6 @@ using command-line utilities like
 .Xr gpart 8 ,
 .Xr fdisk 8 , and
 .Xr bsdlabel 8 .
-
 .Ql ZFS
 partitioning, only available in FreeBSD 10 and later, creates an optionally
 encrypted root-on-ZFS system with support for
@@ -1699,7 +1697,6 @@ changes before the selected hard drive(s) are formatted.
 If changes need to be made, select
 .Ql [ Back ]
 to return to the main partitioning menu.
-
 .Ql [ Revert & Exit ]
 will exit the installer without making any changes to the hard drive.
 .Pp
@@ -1843,7 +1840,6 @@ values may already be filled in.
 Otherwise, enter the local network's domain name in the
 .Ql Search
 field.
-
 .Ql DNS #1
 and
 .Ql DNS #2
@@ -2908,7 +2904,6 @@ As with
 The
 .Xr pw 8 utility can create, remove, modify, and display users and groups.
 It functions as a front end to the system user and group files.
-
 .Xr pw 8 has a very powerful set of command line options that make it suitable for use
 in shell scripts, but new users may find it more complicated than the other
 commands presented in this section.
@@ -3408,7 +3403,6 @@ This allows utilities which need elevated permissions, such as
 .Pp
 The
 .Ql nosuid
-
 .Xr mount 8 option will cause such binaries to silently fail without alerting the user.
 That option is not completely reliable as a
 .Ql nosuid
@@ -4144,7 +4138,6 @@ drive, which is
 dangerously dedicated
 .Dc
 .
-
 .Do
 ada1s3e
 .Dc
@@ -4300,7 +4293,6 @@ refers to the entire slice, and so is not used for ordinary partitions.
 The file system is best visualized as a tree, rooted, as it were, at
 .Pa /
 .
-
 .Pa /dev
 ,
 .Pa /usr
@@ -4311,7 +4303,6 @@ their own branches, such as
 .Pp
 There are various reasons to house some of these directories on separate file
 systems.
-
 .Pa /var
 contains the directories
 .Pa log/
@@ -4439,7 +4430,6 @@ Mount the specified file system type or mount only file systems of the given
 type, if
 .Ar -a
 is included.
-
 .Do
 ufs
 .Dc
@@ -4581,7 +4571,6 @@ The
 column shows the tty the program is running on and
 .Ql STAT
 shows the program's state.
-
 .Ql TIME
 is the amount of time the program has been running on the CPU.
 This is usually not the elapsed time since the program was started, as most
@@ -4816,7 +4805,7 @@ Running
 .Cm /bin/kill -s KILL 1
 is a quick, and unrecommended, way to shutdown the system.
  Always double check the arguments to
-.Xr kill 1  before pressing Return.
+.Xr kill 1 before pressing Return.
 .Ss SHELLS
 .Pp
 A
@@ -7052,7 +7041,6 @@ not work.
 .Ss DIRECTORY
 .Pp
 Xorg looks in several directories for configuration files.
-
 .Pa /usr/local/etc/X11/
 is the recommended directory for these files on FreeBSD.
 Using this directory helps keep application files separate from operating
@@ -7270,7 +7258,6 @@ connectors.
 The projector has been connected to the
 .Ql VGA1
 output.
-
 .Xr xrandr 1 is now used to set that output to the native resolution of the projector and
 add the additional space to the right side of the desktop:
 .Bd -literal -offset indent
@@ -7347,7 +7334,6 @@ EndSection
 .Ed
 Set United States, Spanish, and Ukrainian keyboard layouts.
 Cycle through these layouts by pressing AltShift.
-
 .Ql x11/xxkb
 or
 .Ql x11/sbxkb
@@ -7647,7 +7633,7 @@ Add these lines:
 	     <edit name="spacing" mode="assign">
 		 <int>100</int>
 	     </edit>
-	 </match>     
+	 </match>
 .Ed
 .Pp
 Certain fonts, such as Helvetica, may have a problem when anti-aliased.
@@ -7664,7 +7650,7 @@ To avoid this, consider adding the following to
 	     <edit name="family" mode="assign">
 		 <string>sans-serif</string>
 	     </edit>
-	 </match>       
+	 </match>
 .Ed
 .Pp
 After editing
@@ -8952,7 +8938,7 @@ If the package is not available, use the Ports Collection instead:
 AbiWord is a free word processing program similar in look and feel toMicrosoft Word.
 It is fast, contains many features, and is user-friendly.
 .Pp
-AbiWord can import or export many file formats, including some proprietary ones likeMicrosoft 
+AbiWord can import or export many file formats, including some proprietary ones likeMicrosoft
 .Pa .rtf
 .
 .Pp
@@ -11260,7 +11246,6 @@ resets the USB port.
 Resetting the port can cause problems with some printers, so the
 .Pa unlpt0
 device is usually used instead.
-
 .Pa unlpt0
 does not reset the USB port at all.
 .It Parallel (IEEE-1284)
@@ -11484,11 +11469,10 @@ lp:\
 	:sh:\			
 	:mx#0:\			
 	:sd=/var/spool/lpd/lp:\	
-	:lf=/var/log/lpd-errs:	
+	:lf=/var/log/lpd-errs:
 .Ed
 .Pp
 The name of this printer.
-
 .Xr lpr 1 sends print jobs to the
 .Ql lp
 printer unless another printer is specified with
@@ -11824,7 +11808,6 @@ Test the filter by printing PostScript and plain text files.
 .Pp
 Writing a filter that detects many different types of input and formats them
 correctly is challenging.
-
 .Ql print/apsfilter
 from the Ports Collection is a smart
 .Do
@@ -11909,7 +11892,6 @@ Rank   Owner      Job  Files                                 Total Size
 .Pp
 .Xr lprm 1 is used to remove print jobs.
 Normal users are only allowed to remove their own jobs.
-
 .Ql root
 can remove any or all jobs.
 .Pp
@@ -11925,7 +11907,6 @@ cfA004smithy dequeued
 .Ed
 .Pp
 Remove a single job from a printer.
-
 .Xr lpq 1 is used to find the job number.
 .Bd -literal -offset indent
 % lpq
@@ -11938,10 +11919,8 @@ cfA005smithy dequeued
 .Ss LPC
 .Pp
 .Xr lpc 8 is used to check and modify printer status.
-
 .Ql lpc
 is followed by a command and an optional printer name.
-
 .Ql all
 can be used instead of a specific printer name, and the command will be applied
 to all printers.
@@ -14367,7 +14346,6 @@ This command will allow the user to obtain valuable information on system IO.
 .Pp
 The
 .Ev vfs.vmiodirenable
-
 .Xr sysctl 8 variable may be set to either
 .Ql 0
 (off) or
@@ -14395,7 +14373,6 @@ wasted memory, but one should experiment to find out.
 .Pp
 The
 .Ev vfs.write_behind
-
 .Xr sysctl 8 variable defaults to
 .Ql 1
 (on).
@@ -14409,7 +14386,6 @@ turned off.
 .Pp
 The
 .Ev vfs.hirunningspace
-
 .Xr sysctl 8 variable determines how much outstanding write I/O may be queued to disk
 controllers system-wide at any given instance.
 The default is usually sufficient, but on machines with many disks, try bumping
@@ -14452,7 +14428,6 @@ some blocks indefinitely when under heavy disk load.
 A crash or power failure may cause serious file system corruption.
 Check the default on the system by observing the
 .Ev hw.ata.wc
-
 .Xr sysctl 8 variable.
 If IDE write caching is turned off, one can set this read-only variable to
 .Ql 1
@@ -14619,7 +14594,6 @@ which are actually
 free
 .Dc
 .
-
 .Xr fsck 8 recognizes this situation, and frees the resources that are no longer used.
 It is safe to ignore the dirty state of the file system after a crash by
 forcibly mounting it with
@@ -14665,7 +14639,6 @@ that does not have enough free space to hold all the files twice.
 .Pp
 The
 .Ev kern.maxfiles
-
 .Xr sysctl 8 variable can be raised or lowered based upon system requirements.
 This variable indicates the maximum number of file descriptors on the system.
 When the file descriptor table is full,
@@ -14682,7 +14655,6 @@ In older FreeBSD releases, the default value of
 is derived from
 .Ar maxusers
 in the kernel configuration file.
-
 .Ev kern.maxfiles
 grows proportionally to the value of
 .Ar maxusers
@@ -14727,7 +14699,6 @@ In older releases, the system will auto-tune
 if it is set to
 .Ql 0
 .
-
 .Pp
 The auto-tuning algorithm sets
 .Ql maxusers
@@ -15869,7 +15840,6 @@ The loader will then read
 which sets reasonable defaults for variables and reads
 .Pa /boot/loader.conf
 for local changes to those variables.
-
 .Pa loader.rc
 then acts on these variables, loading whichever modules and kernel are
 selected.
@@ -18789,7 +18759,6 @@ To load SSH keys into memory and remove the need to type the passphrase each tim
 Authentication is handled by
 .Cm ssh-agent
 , using the private keys that are loaded into it.
-
 .Cm ssh-agent
 can be used to launch another application like a shell or a window manager.
 .Pp
@@ -20190,7 +20159,7 @@ The
 # make buildworld  
 # make installworld DESTDIR=$D  
 # make distribution DESTDIR=$D  
-# mount -t devfs devfs $D/dev  
+# mount -t devfs devfs $D/dev
 .Ed
 .Pp
 Selecting a location for a jail is the best starting point.
@@ -20902,7 +20871,6 @@ However, downloaded distfiles are stored in the jail that downloaded them.
 By default, these files are stored in
 .Pa /var/ports/distfiles
 within each jail.
-
 .Pa /var/ports
 inside each jail is also used as a work directory when building ports.
 .Pp
@@ -21063,7 +21031,6 @@ To upgrade the basejail to a new version, first upgrade the host system as
 described in .
 Once the host has been upgraded and rebooted, the basejail can then be
 upgraded.
-
 .Xr freebsd-update 8 has no way of determining which version is currently installed in the basejail,
 so the original version must be specified.
 Use
@@ -21338,7 +21305,7 @@ Immediately after the
 .Ql forwarders
 section, add references to the
 .Ql trusted
- ACL defined earlier:
+ACL defined earlier:
 .Bd -literal -offset indent
 	forwarders {
 		10.0.0.62;
@@ -21615,7 +21582,7 @@ This machine uses the single label,
 , for everything in the default file systems.
 If the web server needs to run at
 .Ql biba/low
-to prevent write up capabilities, it could be installed to a separate UFS 
+to prevent write up capabilities, it could be installed to a separate UFS
 .Pa /usr/local
 file system set at
 .Ql biba/low
@@ -21634,7 +21601,7 @@ All configuration may be done using
 , which is used to set the labels on system subjects.
 For example, to set the
 .Ql biba
- MAC label to
+MAC label to
 .Ql high
 on
 .Pa test
@@ -22874,7 +22841,6 @@ for read-only.
 Reboot into single user mode.
 Run
 .Cm tunefs
-
 .Ar -l enable
 on
 .Pa /
@@ -22882,7 +22848,6 @@ on
 Reboot the system.
 Run
 .Cm mount
-
 .Ar -urw
 .Pa /
 and change the
@@ -24745,7 +24710,6 @@ Instead, write over the previous recording like this:
 The DVD+RW format supports appending data to a previous recording.
 This operation consists of merging a new session to the existing one as it is
 not considered to be multi-session writing.
-
 .Xr growisofs 1 will grow the ISO 9660 file system present on the media.
 .Pp
 For example, to append data to aDVD+RW, use the following:
@@ -25061,7 +25025,6 @@ When creating a backup file, make sure that the backup is not saved to the same
 directory that is being backed up.
 .Bd -literal -offset indent
 # tar czvf /tmp/mybackup.tgz .
-
 .Ed
 .Pp
 To restore the entire backup,
@@ -25415,7 +25378,6 @@ The un-alterable
 .Ar snapshot
 file flag is set by
 .Xr mksnap_ffs 8 after initial creation of a snapshot file.
-
 .Xr unlink 1 makes an exception for snapshot files since it allows them to be removed.
 .Pp
 Snapshots are created using
@@ -25457,7 +25419,6 @@ provide a clean and unchanging result.
 Running
 .Xr dump 8 on the snapshot will produce a dump file that is consistent with the file
 system and the timestamp of the snapshot.
-
 .Xr dump 8 can also take a snapshot, create a dump image, and then remove the snapshot in
 one command by using
 .Ar -L
@@ -27543,7 +27504,7 @@ While it is theoretically possible to boot from aRAID3 array on FreeBSD, that co
 .Ss CREATING A DEDICATED RAID3 ARRAY
 .Pp
 In FreeBSD, support for RAID3 is implemented by the
-.Xr graid3 8  GEOMclass.
+.Xr graid3 8 GEOMclass.
 Creating a dedicated RAID3 array on FreeBSD requires the following steps.
 .Pp
 First, load the
@@ -27647,7 +27608,6 @@ If needed, it can be loaded manually with
 Software RAID devices often have a menu that can be entered by pressing special keys when the
 computer is booting.
 The menu can be used to create and deleteRAID arrays.
-
 .Xr graid 8 can also create arrays directly from the command line.
 .Pp
 .Cm graid label
@@ -29647,7 +29607,6 @@ Enabled the following features on 'mypool':
 The newer features of ZFS will not be available until
 .Cm zpool upgrade
 has completed.
-
 .Cm zpool upgrade -v
 can be used to see what new features will be provided by upgrading, as well as
 which features are already supported.
@@ -29748,7 +29707,6 @@ can show even more information when the options
 or
 .Ar -l
 are provided.
-
 .Ar -i
 displays user-initiated events as well as internally loggedZFS events.
 .Bd -literal -offset indent
@@ -29973,7 +29931,6 @@ To destroy a dataset and all of its children, use
 to recursively destroy the dataset and all of its children.
 Use
 .Ar -n
-
 .Ar -v
 to list datasets and snapshots that would be destroyed by this operation, but
 do not actually destroy anything.
@@ -30254,7 +30211,6 @@ To list snapshots,
 is appended to
 .Cm zfs list
 .
-
 .Ar -t all
 displays both file systems and snapshots.
 .Pp
@@ -30916,7 +30872,6 @@ to
 .Cm zfs recv
 overwrites the name of the pool on the receiving side with the name of the
 snapshot.
-
 .Ar -u
 causes the file systems to not be mounted on the receiving side.
 When
@@ -31258,7 +31213,6 @@ parent dataset.
 There is a caveat: creating a new dataset involves mounting it.
 That requires setting the FreeBSD
 .Ql vfs.usermount
-
 .Xr sysctl 8 to
 .Ql 1
 to allow non-root users to mount a file system.
@@ -31589,7 +31543,6 @@ devices (volumes).
 These datasets and volumes share the pool of remaining free space.
 Each pool is uniquely identified by a name and a GUID.
 The features available are determined by the ZFSversion number on the pool.
-
 .It
 .Ta
 vdev Types
@@ -31598,7 +31551,6 @@ A pool is made up of one or more vdevs, which themselves can be a single disk
 or a group of disks, in the case of a RAID transform.
 When multiple vdevs are used, ZFS spreads data across the vdevs to increase performance and maximize usable
 space.
-
 .Bl -bullet -offset -compact
 .It
 Disk- The most basic type of vdev is a standard block device.
@@ -31758,7 +31710,6 @@ writing to the L2ARC is limited to the sum of the write limit and the boost limi
 limited to the write limit.
 A pair of
 .Xr sysctl 8 values control these rate limits.
-
 .Ev vfs.zfs.l2arc_write_max
 controls how many bytes are written to the cache per second, while
 .Ev vfs.zfs.l2arc_write_boost
@@ -31911,7 +31862,6 @@ This property can be set to one of a number of compression algorithms.
 This will cause all new data that is written to the dataset to be compressed.
 Beyond a reduction in space used, read and write throughput often increases
 because fewer blocks are read or written.
-
 .Bl -bullet -offset -compact
 .It
 LZ4 - Added in ZFS pool version 5000 (feature flags), LZ4 is now the recommended compression algorithm.
@@ -31998,7 +31948,6 @@ Instead of a consistency check like
 .Xr fsck 8 , ZFS has
 .Cm scrub
 .
-
 .Cm scrub
 reads all data blocks stored on the pool and verifies their checksums against
 the known good checksums stored in the metadata.
@@ -32024,7 +31973,6 @@ ZFS provides very fast and accurate dataset, user, and group space accounting in
 addition to quotas and space reservations.
 This gives the administrator fine grained control over how space is allocated
 and allows space to be reserved for critical file systems.
-
 .Pp
 ZFS supports different types of quotas: the dataset quota, the reference quota (refquota), theuser quota, and thegroup quota.
 .Pp
@@ -32072,7 +32020,6 @@ If a snapshot is taken of
 The
 .Ql refreservation
 property works in a similar way, but it excludes descendants like snapshots.
-
 .Pp
 Reservations of any sort are useful in many situations, such as planning and
 testing the suitability of disk space allocation in a new system, or ensuring
@@ -32719,7 +32666,6 @@ The
 .Ql vboxusers
 group is created during installation ofVirtualBox.
 All users that need access to VirtualBox will have to be added as members of this group.
-
 .Cm pw
 can be used to add new members:
 .Bd -literal -offset indent
@@ -33365,13 +33311,11 @@ usbdevice = "tablet"
 These lines are explained in more detail:
 .Pp
 This defines what kind of virtualization to use.
-
 .Ql hvm
 refers to hardware-assisted virtualization or hardware virtual machine.
 Guest operating systems can run unmodified on CPUs with virtualization
 extensions, providing nearly the same performance as running on physical
 hardware.
-
 .Ql generic
 is the default value and creates a PV domain.
 .Pp
@@ -33405,7 +33349,6 @@ Options controlling VNC connectivity to the serial console of the DomU.
 In order, these are: active VNC support, define IP address on which to listen,
 device node for the serial console, and the input method for precise
 positioning of the mouse and other input methods.
-
 .Ql keymap
 defines which keymap to use, and is
 .Ql english
@@ -35274,7 +35217,7 @@ check
 # cd /usr/src          
 # make installworld    
 # mergemaster -Ui      
-# shutdown -r now     
+# shutdown -r now
 .Ed
 .Pp
 Get the latest version of the source.
@@ -35402,7 +35345,7 @@ has a repository path of
 That path is used when checking out the source:
 .Bd -literal -offset indent
 # mv /usr/src /usr/src.bak  
-# svn checkout https://svn.freebsd.org/base/releng/10.3 /usr/src 
+# svn checkout https://svn.freebsd.org/base/releng/10.3 /usr/src
 .Ed
 .Pp
 Move the old directory out of the way.
@@ -36085,7 +36028,7 @@ Note that in some cases, depending on the hardware and the hosts operating
 system, for the host to notice the configuration change, it must be either
 physically disconnected and reconnected, or forced to rescan the USBbus in a system-specific way.
 When FreeBSD is running on the host,
-.Xr usbconfig 8 
+.Xr usbconfig 8
 .Cm reset
 can be used.
 This also must be done after loading
@@ -36235,7 +36178,6 @@ Mass Storage target is provided by templates 0 and 10.
 Both
 .Xr usb_template 4 and
 .Xr cfumass 4 kernel modules must be loaded.
-
 .Xr cfumass 4 interfaces to the CTL subsystem, the same one that is used for iSCSI or Fibre Channel targets.
 On the host side, USB Mass Storage initiators can only access a single LUN, LUN 0.
 .Ss CONFIGURING USB MASS STORAGE TARGET USING THE CFUMASS STARTUP SCRIPT
@@ -40382,7 +40324,6 @@ In this example, the ISP's domain is
 as a mail relay.
 .Pp
 In order to retrieve mail from the ISP's mailbox, install a retrieval agent from the Ports Collection.
-
 .Ql mail/fetchmail
 is a good choice as it supports many different protocols.
 Usually, the ISP will provide POP.
@@ -41179,7 +41120,6 @@ In this field,
 or
 .Ar nowait
 must be specified.
-
 .Ar max-child
 ,
 .Ar max-connections-per-ip-per-minute
@@ -41188,7 +41128,6 @@ and
 are optional.
 .Ar wait|nowait
 indicates whether or not the service is able to handle its own socket.
-
 .Ar dgram
 socket types must use
 .Ar wait
@@ -41197,7 +41136,6 @@ while
 daemons, which are usually multi-threaded, should use
 .Ar nowait
 .
-
 .Ar wait
 usually hands off multiple sockets to a single daemon, while
 .Ar nowait
@@ -41220,7 +41158,6 @@ dropped until the end of the minute.
 For example, a value of
 .Ql /10
 would limit any particular IP address to ten connection attempts per minute.
-
 .Ar max-child-per-ip
 limits the number of child processes that can be started on behalf on any
 single IP address at any moment.
@@ -41958,7 +41895,7 @@ might be in the
 .Do
 acme-art
 .Dc
- NIS domain.
+NIS domain.
 This example will use the domain name
 .Ql test-domain
 .
@@ -42000,7 +41937,7 @@ Since FreeBSD provides built-in NIS support, it only needs to be enabled by addi
 .Bd -literal -offset indent
 nisdomainname="test-domain"	
 nis_server_enable="YES"		
-nis_yppasswdd_enable="YES"	
+nis_yppasswdd_enable="YES"
 .Ed
 .Pp
 This line sets the NIS domain name to
@@ -42529,7 +42466,7 @@ When a new user is added, the account must be added to one or more netgroups.
 If theNIS setup is planned carefully, only one central configuration file needs
 modification to grant or deny access to machines.
 .Pp
-The first step is the initialization of theNIS 
+The first step is the initialization of theNIS
 .Ql netgroup
 map.
 In FreeBSD, this map is not created by default.
@@ -43332,7 +43269,6 @@ The subnet mask that will be provided to clients.
 .Pp
 The default lease expiry time in seconds.
 A client can be configured to override this value.
-
 .Pp
 The maximum allowed length of time, in seconds, for a lease.
 Should a client request a longer lease, a lease will still be issued, but it
@@ -47458,7 +47394,7 @@ map dc0 0.0.0.0/0 -> 0/32 proxy port 21 ftp/tcp
 map dc0 10.0.10.0/29 -> 0/32
 .Ed
 .Pp
-The FTP 
+The FTP
 .Ql map
 rules go before the NAT rule so that when a packet matches an FTP rule, theFTP proxy creates temporary filter rules to let the FTP session packets pass and undergo NAT.
 All LAN packets that are notFTP will not match theFTP rules but will undergoNAT if they match the third rule.
@@ -49309,7 +49245,7 @@ ssid=freebsdap
 wpa=2                            
 wpa_passphrase=freebsdmall       
 wpa_key_mgmt=WPA-PSK             
-wpa_pairwise=CCMP               
+wpa_pairwise=CCMP
 .Ed
 .Pp
 Wireless interface used for the access point.
@@ -51648,7 +51584,7 @@ will not have to change to
 .Pp
 To configure VLAN
 .Ql 5
-, on the NIC 
+, on the NIC
 .Ql em0
 , assign the interface name
 .Ql cameras
@@ -52068,7 +52004,6 @@ repository is one of the Project repositories:
 .
 .It
 branch depends on the repository used.
-
 .Ql ports
 and
 .Ql doc
@@ -52421,7 +52356,6 @@ Prentice-Hall, Inc., 1990.
 ISBN 0-13-949843-5
 .It
 Jolitz, William.
-
 .Do
 Porting UNIX to the 386
 .Dc
@@ -52594,18 +52528,15 @@ Prentice-Hall, Inc., 1989.
 ISBN 0-13-536657-7
 .It
 The BSD family tree.
-
 .Lk https://svnweb.freebsd.org/base/head/share/misc/bsd-family-tree?view=co
 or
 .Pa /usr/share/misc/bsd-family-tree
 on a FreeBSD machine.
 .It
 Networked Computer Science Technical Reports Library.
-
 .Lk http://www.ncstrl.org/
 .It
 Old BSD releases from the Computer Systems Research group (CSRG).
-
 .Lk http://www.mckusick.com/csrg/
 : The 4CD set covers all BSD versions from 1BSD to 4.4BSD and 4.4BSD-Lite2 (but
 not 2.11BSD, unfortunately).
@@ -53924,7 +53855,6 @@ FreeBSD Development Snapshot AnnouncementsThis list provides notifications about
 development snapshots for the head/ and stable/ branches.
 .It freebsd-stable
 Discussions about the use of FreeBSD-STABLEThis is the mailing list for users of FreeBSD-STABLE.
-
 .Do
 STABLE
 .Dc
