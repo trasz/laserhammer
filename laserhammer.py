@@ -114,12 +114,6 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
             return '%s' % (subfind(elt, 'refentrytitle').text)
         return '\n.Xr %s %s ' % (subfind(elt, 'refentrytitle').text, subfind(elt, 'manvolnum').text)
 
-    # Do not insert any markup in what's supposed to be the title.
-    if below_title:
-        if elt.text:
-            return elt.text
-        return ''
-
     mdoc = ''
     if tag == 'sect1':
         below_sect1 = True
@@ -217,6 +211,10 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
         grab_text = True
         append_newline = True
 
+    if tag != 'title' and below_title:
+        # Do not insert any markup in what's supposed to be the title.
+        mdoc = ''
+
     if elt.text and grab_text:
         if literal:
             mdoc = mdoc + elt.text
@@ -240,7 +238,10 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
     if append_newline:
         mdoc = concat(mdoc, '\n')
 
-    if tag == 'function':
+    if tag != 'title' and below_title:
+        # No markup in titles.
+        pass
+    elif tag == 'function':
         mdoc = '\n.Fn %s\n' % mdoc.split('(')[0]
     elif tag == 'quote':
         mdoc = concat(mdoc, '\n.Dc\n')
@@ -258,9 +259,9 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
         if below_table:
             mdoc = ''
         elif below_sect1:
-            mdoc = '\n.Ss %s\n' % reflow(mdoc).upper()
+            mdoc = '\n.Ss %s\n' % reflow(mdoc).strip().upper()
         else:
-            mdoc = '\n.Sh %s\n' % reflow(mdoc).upper()
+            mdoc = '\n.Sh %s\n' % reflow(mdoc).strip().upper()
 
     return mdoc
 
