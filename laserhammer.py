@@ -133,7 +133,7 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
         mdoc = '\n.Do\n'
         grab_text = True
     elif tag in ('acronym', 'address', 'application',
-                 'citetitle', 'city', 'command', 'country',
+                 'citetitle', 'city', 'country',
                  'emphasis', 'fax', 'function', 'keycap', 'link', 'otheraddr',
                  'phone', 'phrase', 'postcode', 'prompt',
                  'replaceable', 'state', 'street', 'trademark',
@@ -148,6 +148,10 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
                  'guibutton', 'guimenu', 'guimenuitem',
                  'literal', 'package', 'revnumber', 'systemitem'):
         mdoc = '\n.Ql '
+        grab_text = True
+        append_newline = True
+    elif tag == 'command':
+        mdoc = '\n.Cm '
         grab_text = True
         append_newline = True
     elif tag == 'entry' and below_table:
