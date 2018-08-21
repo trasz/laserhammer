@@ -280,26 +280,3 @@ def laserhammer(root):
     mdoc = mdoc + laserhammerx(root)
 
     return mdoc
-
-def main():
-    if len(sys.argv) > 3:
-        sys.exit('usage: %s [input-file [output-file]]' % sys.argv[0])
-
-    if len(sys.argv) > 2:
-        outfile = open(sys.argv[2], "w")
-    else:
-        outfile = sys.stdout
-
-    if len(sys.argv) > 1:
-        infile = sys.argv[1]
-    else:
-        # This '.buffer' thing is a workaround for an encoding problem;
-        # see https://github.com/lincolnloop/python-qrcode/issues/67.
-        infile = sys.stdin.buffer
-
-    root = xml.etree.ElementTree.parse(infile).getroot()
-    mdoc = laserhammer(root)
-    outfile.write(mdoc)
-
-if __name__ == '__main__':
-    main()

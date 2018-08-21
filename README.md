@@ -1,5 +1,5 @@
 LaserHammer is a simple DocBook to mdoc(7) ("UNIX man page syntax") converter.
-Use it like this:
+The command line utility is in scripts/ subdirectory, use it like this:
 ```
 ./laserhammer.py book.parsed.xml handbook.7
 ```
