@@ -101,7 +101,7 @@ def concat(first, second):
 
     return first + second
 
-def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, below_varlistentry=False, below_title=False):
+def laserhammerx(elt, pp_allowed=True, below_sect1=False, below_table=False, below_varlistentry=False, below_title=False):
     literal = False
     grab_text = False
     append_newline = False
@@ -225,7 +225,7 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
         print('%s: ignoring text "%s", tag <%s>' % (sys.argv[0], elt.text, tag))
 
     for child in elt:
-        mdoc = concat(mdoc, laserhammer(child, pp_allowed, below_sect1, below_table, below_varlistentry, below_title))
+        mdoc = concat(mdoc, laserhammerx(child, pp_allowed, below_sect1, below_table, below_varlistentry, below_title))
         if child.tail and grab_text:
             if literal:
                 mdoc = mdoc + child.tail
@@ -265,6 +265,22 @@ def laserhammer(elt, pp_allowed=True, below_sect1=False, below_table=False, belo
 
     return mdoc
 
+def laserhammer(root):
+    title = get_title(root)
+    date = get_date(root)
+
+    mdoc = ''
+    mdoc = mdoc + '.Dd %s\n' % date
+    mdoc = mdoc + '.Dt %s 7\n' % title.replace(' ', '-').upper().replace('FREEBSD-', '')
+    mdoc = mdoc + '.Os\n'
+    mdoc = mdoc + '.Sh NAME\n'
+    mdoc = mdoc + '.Nm %s\n' % title.replace(' ', '-').lower().replace('freebsd-', '')
+    mdoc = mdoc + '.Nd %s' % title
+
+    mdoc = mdoc + laserhammerx(root)
+
+    return mdoc
+
 def main():
     if len(sys.argv) > 3:
         sys.exit('usage: %s [input-file [output-file]]' % sys.argv[0])
@@ -282,16 +298,7 @@ def main():
         infile = sys.stdin.buffer
 
     root = xml.etree.ElementTree.parse(infile).getroot()
-    title = get_title(root)
-    date = get_date(root)
     mdoc = laserhammer(root)
-
-    outfile.write('.Dd %s\n' % date)
-    outfile.write('.Dt %s 7\n' % title.replace(' ', '-').upper().replace('FREEBSD-', ''))
-    outfile.write('.Os\n')
-    outfile.write('.Sh NAME\n')
-    outfile.write('.Nm %s\n' % title.replace(' ', '-').lower().replace('freebsd-', ''))
-    outfile.write('.Nd %s' % title)
     outfile.write(mdoc)
 
 if __name__ == '__main__':
