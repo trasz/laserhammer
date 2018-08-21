@@ -5,4 +5,4 @@ The command line utility is in scripts/ subdirectory, use it like this:
 ```
 The 7 above stands for section 7 of man pages, the "miscellaneous documentation".
 The 'book.parsed.xml' is a processed XML source of the FreeBSD Handbook; you can
-use it as test sample.  
+use it as test sample.  The 'book.7' is the example translated into mdoc.
