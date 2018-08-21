@@ -1,8 +1,8 @@
 LaserHammer is a simple DocBook to mdoc(7) ("UNIX man page syntax") converter.
 
-The command line utility resides in scripts/ subdirectory; use it like this:
+The command line utility resides in the scripts/ subdirectory; use it like this:
 ```
-./laserhammer.py book.parsed.xml book.7
+./laserhammer book.parsed.xml book.7
 ```
 The 7 above stands for section 7 of man pages, "miscellaneous documentation".
 The 'book.parsed.xml' is a processed XML source of the FreeBSD Handbook; you can
