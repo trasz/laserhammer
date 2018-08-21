@@ -24,7 +24,6 @@
 # SUCH DAMAGE.
 
 import sys
-import xml.etree.ElementTree
 
 import laserhammer
 
@@ -44,8 +43,7 @@ def main():
         # see https://github.com/lincolnloop/python-qrcode/issues/67.
         infile = sys.stdin.buffer
 
-    root = xml.etree.ElementTree.parse(infile).getroot()
-    mdoc = laserhammer.laserhammer(root)
+    mdoc = laserhammer.laserhammer(infile)
     outfile.write(mdoc)
 
 if __name__ == '__main__':

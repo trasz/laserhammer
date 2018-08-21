@@ -265,7 +265,10 @@ def laserhammerx(elt, pp_allowed=True, below_sect1=False, below_table=False, bel
 
     return mdoc
 
-def laserhammer(root):
+def laserhammer(infile):
+
+    root = xml.etree.ElementTree.parse(infile).getroot()
+
     title = get_title(root)
     date = get_date(root)
 
