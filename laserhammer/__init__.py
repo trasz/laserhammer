@@ -137,7 +137,7 @@ def laserhammerx(elt, pp_allowed=True, below_sect1=False, below_table=False, bel
     elif tag in ('buildtarget', 'computeroutput', 'constant',
                  'errortype', 'firstterm',
                  'guibutton', 'guimenu', 'guimenuitem',
-                 'literal', 'package', 'revnumber', 'systemitem'):
+                 'literal', 'package', 'revnumber', 'systemitem', 'tag'):
         mdoc = '\n.Ql '
         grab_text = True
         append_newline = True
