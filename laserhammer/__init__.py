@@ -41,7 +41,7 @@ def reflow(s):
             tlen = 0
 #            if word[0] == '.':
 #                t = t + '\\&'
-#                print('t = "' + t + '"')
+#                print('t = "' + t + '"', file=sys.stderr)
         elif tlen > 0:
             t = t + ' '
             tlen = tlen + 1
@@ -222,7 +222,7 @@ def laserhammerx(elt, pp_allowed=True, below_sect1=False, below_table=False, bel
             mdoc = concat(mdoc, reflow(elt.text))
 
     if elt.text and elt.text.strip() and not grab_text:
-        print('%s: ignoring text "%s", tag <%s>' % (sys.argv[0], elt.text, tag))
+        print('%s: ignoring text "%s", tag <%s>' % (sys.argv[0], elt.text, tag), file=sys.stderr)
 
     for child in elt:
         mdoc = concat(mdoc, laserhammerx(child, pp_allowed, below_sect1, below_table, below_varlistentry, below_title))
@@ -233,7 +233,7 @@ def laserhammerx(elt, pp_allowed=True, below_sect1=False, below_table=False, bel
                 mdoc = concat(mdoc, reflow(child.tail))
 
         if child.tail and child.tail.strip() and not grab_text:
-            print('%s: ignoring tail "%s", tag <%s>' % (sys.argv[0], child.tail, tag))
+            print('%s: ignoring tail "%s", tag <%s>' % (sys.argv[0], child.tail, tag), file=sys.stderr)
 
     if append_newline:
         mdoc = concat(mdoc, '\n')
